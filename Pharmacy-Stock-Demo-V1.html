@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[DEMO] คลังยาสมุนไพร · แดชบอร์ดสถานะสต็อก</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F7F5;
+    --surface:#FFFFFF;
+    --ink:#16302C;
+    --ink-soft:#52685F;
+    --ink-faint:#8AA098;
+    --teal:#2F7A6B;
+    --teal-deep:#1D4F45;
+    --teal-pale:#E4F0EC;
+    --amber:#C98A3A;
+    --amber-pale:#FBEDDA;
+    --brick:#AE4B3F;
+    --brick-pale:#F8E6E3;
+    --line:#DCE6E1;
+    --radius:14px;
+    --font-display:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-display);
+    -webkit-font-smoothing:antialiased;
+    padding:32px 40px 80px;
+  }
+  a{color:inherit;}
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:6px;
+  }
+  .brand-title{
+    font-size:26px;
+    font-weight:700;
+    color:var(--teal-deep);
+  }
+  .brand-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  .topbar-meta{
+    text-align:right;
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:var(--font-mono);
+  }
+  .topbar-meta .dot{
+    display:inline-block;
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--teal);
+    margin-right:6px;
+    box-shadow:0 0 0 3px var(--teal-pale);
+  }
+
+  /* ---------- Hero stats ---------- */
+  .hero{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 1fr;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .stat-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card.primary{
+    background:linear-gradient(135deg,var(--teal-deep),var(--teal));
+    color:#fff;
+    border:none;
+  }
+  .stat-label{
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    font-weight:600;
+  }
+  .stat-card.primary .stat-label{color:rgba(255,255,255,.75);}
+  .stat-value{
+    font-family:var(--font-mono);
+    font-size:34px;
+    font-weight:600;
+    margin-top:10px;
+    letter-spacing:-0.01em;
+  }
+  .stat-foot{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+  .stat-card.primary .stat-foot{color:rgba(255,255,255,.8);}
+  .stat-value small{font-size:16px; font-weight:500;}
+
+  /* ---------- Alert strip: blister pack motif ---------- */
+  .alert-section{margin-bottom:28px;}
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:12px;
+  }
+  .section-title{
+    font-size:15px;
+    font-weight:700;
+    color:var(--teal-deep);
+  }
+  .section-note{
+    font-size:12px;
+    color:var(--ink-faint);
+    font-family:var(--font-mono);
+  }
+  .blister{
+    display:flex;
+    gap:0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:6px;
+    overflow-x:auto;
+  }
+  .pill{
+    flex:1 0 190px;
+    position:relative;
+    padding:16px 18px;
+    border-radius:999px / 40px;
+    margin:2px;
+    border:1.5px dashed transparent;
+  }
+  .pill:not(:last-child){border-right:1.5px dashed var(--line);}
+  .pill.crit{background:var(--brick-pale);}
+  .pill.watch{background:var(--amber-pale);}
+  .pill-status{
+    font-family:var(--font-mono);
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .pill.crit .pill-status{color:var(--brick);}
+  .pill.watch .pill-status{color:var(--amber);}
+  .pill-name{
+    font-size:14px;
+    font-weight:600;
+    margin-top:6px;
+    color:var(--ink);
+  }
+  .pill-detail{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:4px;
+    font-family:var(--font-mono);
+  }
+
+  /* ---------- Category breakdown ---------- */
+  .category-section{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-bottom:28px;
+  }
+  .cat-row{
+    display:grid;
+    grid-template-columns:170px 1fr 90px 110px;
+    align-items:center;
+    gap:14px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .cat-row:last-child{border-bottom:none;}
+  .cat-row.head{
+    color:var(--ink-faint);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-weight:600;
+  }
+  .cat-name{font-weight:600; color:var(--ink);}
+  .cat-bar-track{
+    height:8px;
+    background:var(--teal-pale);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .cat-bar-fill{
+    height:100%;
+    background:var(--teal);
+    border-radius:4px;
+  }
+  .cat-value{font-family:var(--font-mono); text-align:right;}
+  .cat-count{font-family:var(--font-mono); text-align:right; color:var(--ink-soft);}
+
+  /* ---------- Table ---------- */
+  .table-section{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+  }
+  .table-controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .table-controls input, .table-controls select{
+    font-family:var(--font-display);
+    font-size:13px;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .table-controls input{flex:1; min-width:180px;}
+  .table-controls input:focus, .table-controls select:focus{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+  }
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-faint);
+    font-weight:600;
+    padding:10px 10px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--teal);}
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+  }
+  tbody tr:hover{background:var(--teal-pale);}
+  .mono{font-family:var(--font-mono);}
+  .num{text-align:right;}
+  .tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:999px;
+    letter-spacing:.03em;
+  }
+  .tag.ok{background:var(--teal-pale); color:var(--teal-deep);}
+  .tag.watch{background:var(--amber-pale); color:var(--amber);}
+  .tag.crit{background:var(--brick-pale); color:var(--brick);}
+  .empty-row td{
+    text-align:center;
+    color:var(--ink-faint);
+    padding:30px;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-family:var(--font-display);
+    font-size:13px;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--teal); color:var(--teal-deep);}
+  .btn-primary{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+  .btn-primary:hover{background:var(--teal-deep); border-color:var(--teal-deep); color:#fff;}
+  .row-actions{display:flex; gap:6px; white-space:nowrap;}
+  .icon-btn{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    font-weight:600;
+    padding:5px 10px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:var(--bg);
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .icon-btn:hover{border-color:var(--teal); color:var(--teal-deep);}
+  .icon-btn.danger:hover{border-color:var(--brick); color:var(--brick);}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(22,48,44,.45);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);
+    border-radius:var(--radius);
+    max-width:560px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:24px 26px;
+  }
+  .modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+  }
+  .modal-title{font-size:17px; font-weight:700; color:var(--teal-deep);}
+  .modal-close{
+    background:none; border:none;
+    font-size:22px; line-height:1;
+    color:var(--ink-faint);
+    cursor:pointer;
+    padding:4px;
+  }
+  .modal-close:hover{color:var(--brick);}
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .field-grid label{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .field-grid input{
+    font-family:var(--font-display);
+    font-size:13.5px;
+    font-weight:400;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .field-grid input:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+  }
+
+  @media (max-width:900px){
+    body{padding:20px 16px 60px;}
+    .hero{grid-template-columns:1fr;}
+    .cat-row{grid-template-columns:120px 1fr 76px;}
+    .cat-count{display:none;}
+    table{font-size:12px;}
+  }
+
+  /* ---------- Demo additions ---------- */
+  .demo-chip{display:inline-block;font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;background:var(--amber-pale);color:#8A5A1C;padding:2px 9px;border-radius:999px;vertical-align:1px;}
+  .clickable{cursor:pointer;transition:box-shadow .15s, transform .15s;}
+  .stat-card.clickable:hover{box-shadow:0 6px 18px rgba(22,48,44,.10);transform:translateY(-1px);}
+  .cat-row.clickable:hover{background:var(--teal-pale);}
+  .cat-row{padding-left:8px;padding-right:8px;border-radius:6px;}
+  .cat-bar-wrap{display:flex;align-items:center;gap:10px;}
+  .cat-bar-wrap .cat-bar-track{flex:1;}
+  .cat-pct{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);width:34px;text-align:right;}
+  button.pill{font-family:inherit;text-align:left;cursor:pointer;color:inherit;}
+  button.pill:hover{border-color:var(--teal);}
+  button.pill:focus-visible, .stat-card.clickable:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+  .pill.exp{background:var(--brick);}
+  .pill.exp .pill-status, .pill.exp .pill-name, .pill.exp .pill-detail{color:#fff;}
+  .pill-detail{line-height:1.5;}
+  .tag.exp{background:var(--brick);color:#fff;}
+  td.bad{color:var(--brick);font-weight:600;}
+  td.mono{white-space:nowrap;}
+  @media (max-width:900px){ .cat-row.head > div:last-child{display:none;} }
+  .table-scroll{overflow-x:auto;}
+  .table-scroll table{min-width:860px;}
+  thead th.sorted{color:var(--teal-deep);}
+  .sort-ind{font-size:9px;display:inline-block;width:10px;}
+  .form-error{color:var(--brick);font-size:12.5px;margin-top:12px;min-height:16px;}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--teal-deep);color:#fff;font-size:13.5px;padding:11px 18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;max-width:92vw;}
+  .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+  .toast button{margin-left:12px;background:none;border:1px solid rgba(255,255,255,.5);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:6px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div>
+      <div class="brand-eyebrow">ระบบบริหารคลังเวชภัณฑ์</div>
+      <div class="brand-title">คลังยาสมุนไพร — งานแพทย์แผนไทย</div>
+      <div class="brand-sub">แดชบอร์ดสถานะยาคงคลัง · <span class="demo-chip">DEMO · ข้อมูลสมมติ</span></div>
+    </div>
+    <div class="topbar-meta">
+      <div><span class="dot"></span>อัปเดตล่าสุด: <span id="updatedAt"></span></div>
+      <div style="margin-top:4px;">รีเฟรชหน้าเพื่อกลับเป็นข้อมูลตั้งต้น</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="stat-card primary clickable" id="cardAll" title="คลิกเพื่อดูทุกรายการ">
+      <div class="stat-label">มูลค่าคงคลังรวม</div>
+      <div class="stat-value" id="totalValue">฿0</div>
+      <div class="stat-foot" id="totalValueFoot">รวมทุกหมวดหมู่ยา</div>
+    </div>
+    <div class="stat-card clickable" id="cardSku" title="คลิกเพื่อดูทุกรายการ">
+      <div class="stat-label">จำนวนรายการยา (SKU)</div>
+      <div class="stat-value" id="totalSku">0 <small>รายการ</small></div>
+      <div class="stat-foot" id="totalUnitsFoot">— หน่วยรวม</div>
+    </div>
+    <div class="stat-card clickable" id="cardAlert" title="คลิกเพื่อกรองเฉพาะรายการที่ต้องติดตาม">
+      <div class="stat-label">รายการที่ต้องติดตาม</div>
+      <div class="stat-value" id="totalCritical">0 <small>รายการ</small></div>
+      <div class="stat-foot" id="alertFoot">—</div>
+    </div>
+  </div>
+
+  <div class="alert-section">
+    <div class="section-head">
+      <div class="section-title">รายการที่ต้องติดตาม — เรียงตามความเร่งด่วน</div>
+      <div class="section-note" id="alertNote">เรียงตามความเร่งด่วน</div>
+    </div>
+    <div class="blister" id="blisterStrip"></div>
+  </div>
+
+  <div class="category-section">
+    <div class="section-head">
+      <div class="section-title">มูลค่าคงคลังแยกตามหมวดหมู่</div>
+      <div class="section-note">คลิกหมวดเพื่อกรองตาราง</div>
+    </div>
+    <div class="cat-row head">
+      <div>หมวดหมู่</div>
+      <div>สัดส่วนมูลค่า</div>
+      <div class="num">มูลค่า</div>
+      <div class="num">SKU</div>
+    </div>
+    <div id="categoryList"></div>
+  </div>
+
+
+  <div class="table-section" id="tableSection">
+    <div class="section-head">
+      <div class="section-title">รายการยาคงคลังทั้งหมด</div>
+      <div class="section-note" id="tableCount">— รายการ</div>
+    </div>
+    <div class="table-controls">
+      <input type="text" id="searchBox" placeholder="ค้นหาชื่อยา หรือรหัสยา...">
+      <select id="categoryFilter"><option value="">ทุกหมวดหมู่</option></select>
+      <select id="statusFilter">
+        <option value="">ทุกสถานะ</option>
+        <option value="__alert">ต้องติดตามทั้งหมด</option>
+        <option value="หมดอายุแล้ว">หมดอายุแล้ว</option>
+        <option value="วิกฤต">วิกฤต</option>
+        <option value="เฝ้าระวัง">เฝ้าระวัง</option>
+        <option value="ปกติ">ปกติ</option>
+      </select>
+      <button class="btn" id="clearFilterBtn" style="display:none">ล้างตัวกรอง</button>
+      <button class="btn btn-primary" id="openAddBtn">+ เพิ่มรายการยา</button>
+      <button class="btn" id="exportBtn">ส่งออกข้อมูล (.json)</button>
+      <button class="btn" id="importBtn">นำเข้าข้อมูล (.json)</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th data-key="code">รหัสยา</th>
+          <th data-key="name">ชื่อยา</th>
+          <th data-key="category">หมวดหมู่</th>
+          <th data-key="qty" class="num">คงเหลือ</th>
+          <th data-key="reorder" class="num">จุดสั่งซื้อ</th>
+          <th data-key="expiry">วันหมดอายุ</th>
+          <th data-key="value" class="num">มูลค่ารวม</th>
+          <th data-key="status">สถานะ</th>
+          <th class="no-sort">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">เพิ่มรายการยา</div>
+        <button class="modal-close" id="modalClose" aria-label="ปิด">&times;</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="f-editingCode">
+        <div class="field-grid">
+          <label>รหัสยา
+            <input type="text" id="f-code" required placeholder="เช่น HB-6001">
+          </label>
+          <label>ชื่อยา
+            <input type="text" id="f-name" required placeholder="เช่น มะขามแขก แคปซูล">
+          </label>
+          <label>หมวดหมู่
+            <input type="text" id="f-category" required list="categoryOptions" placeholder="เช่น ยาระบบทางเดินอาหาร">
+            <datalist id="categoryOptions"></datalist>
+          </label>
+          <label>หน่วยนับ
+            <input type="text" id="f-unit" required placeholder="เช่น แคปซูล, ขวด, หลอด">
+          </label>
+          <label>จำนวนคงเหลือ
+            <input type="number" id="f-qty" required min="0" step="1">
+          </label>
+          <label>จุดสั่งซื้อ (reorder point)
+            <input type="number" id="f-reorder" required min="0" step="1">
+          </label>
+          <label>ราคาต่อหน่วย (บาท)
+            <input type="number" id="f-price" required min="0" step="0.01">
+          </label>
+          <label>วันหมดอายุ
+            <input type="date" id="f-expiry" required>
+          </label>
+        </div>
+        <div id="formError" class="form-error"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="cancelBtn">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- ข้อมูลสมมติ (Demo) ----------
+// expInDays = จำนวนวันจากวันนี้ถึงวันหมดอายุ — คำนวณจากวันที่เปิดไฟล์ทุกครั้ง สถานะจึงเหมือนเดิมไม่ว่าเปิดวันไหน
+const seedData = [
+  {code:"HB-1001", name:"ฟ้าทะลายโจร แคปซูล 400mg", category:"ยาแก้ไข้/ทางเดินหายใจ", unit:"แคปซูล", qty:2400, reorder:800, price:1.5, expInDays:350},
+  {code:"HB-2001", name:"ขมิ้นชัน แคปซูล 500mg", category:"ยาระบบทางเดินอาหาร", unit:"แคปซูล", qty:1800, reorder:600, price:1.2, expInDays:240},
+  {code:"HB-3001", name:"ครีมไพล 30g", category:"ยากล้ามเนื้อและกระดูก", unit:"หลอด", qty:90, reorder:120, price:45, expInDays:190},
+  {code:"HB-4001", name:"ยาหอมนวโกฐ ผง 15g", category:"ยาหอม/แก้ลม", unit:"ขวด", qty:260, reorder:200, price:35, expInDays:150},
+  {code:"HB-5001", name:"ยาประสะมะแว้ง ชนิดเม็ด", category:"ยาแก้ไข้/ทางเดินหายใจ", unit:"เม็ด", qty:1500, reorder:500, price:0.8, expInDays:20},
+];
+
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const DAY_MS = 1000*60*60*24;
+function toISO(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function parseISO(s){ const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||"")); return m ? new Date(+m[1], +m[2]-1, +m[3]) : new Date(NaN); }
+const rawData = seedData.map(({expInDays, ...rest}) => ({...rest, expiry: toISO(new Date(TODAY.getTime() + expInDays*DAY_MS))}));
+
+function daysUntil(dateStr){ return Math.round((parseISO(dateStr) - TODAY) / DAY_MS); }
+
+const ST = { EXPIRED:"หมดอายุแล้ว", CRIT:"วิกฤต", WATCH:"เฝ้าระวัง", OK:"ปกติ" };
+const STATUS_RANK = { [ST.EXPIRED]:0, [ST.CRIT]:1, [ST.WATCH]:2, [ST.OK]:3 };
+
+function computeStatus(item){
+  const days = daysUntil(item.expiry);
+  if(days < 0) return ST.EXPIRED;
+  if(item.qty <= item.reorder || days <= 30) return ST.CRIT;
+  if(item.qty <= item.reorder * 1.5 || days <= 90) return ST.WATCH;
+  return ST.OK;
+}
+// เหตุผลทั้งหมดที่ทำให้รายการนี้ต้องติดตาม (มีได้มากกว่าหนึ่งข้อ)
+function reasonsOf(i){
+  const r = [];
+  if(i.days < 0) r.push(`หมดอายุแล้ว ${Math.abs(i.days)} วัน`);
+  else if(i.days <= 90) r.push(`หมดอายุใน ${i.days} วัน`);
+  if(i.qty <= i.reorder) r.push(`ต่ำกว่าจุดสั่งซื้อ · เหลือ ${fmtNum(i.qty)} ${i.unit}`);
+  else if(i.qty <= i.reorder * 1.5) r.push(`ใกล้จุดสั่งซื้อ · เหลือ ${fmtNum(i.qty)} ${i.unit}`);
+  return r;
+}
+
+function enrich(item){
+  const base = {...item, qty:Number(item.qty)||0, reorder:Number(item.reorder)||0, price:Number(item.price)||0};
+  return {...base, value: base.qty*base.price, days: daysUntil(base.expiry), status: computeStatus(base)};
+}
+
+let data = rawData.map(enrich);
+
+// ---------- Formatting helpers ----------
+const fmtBaht = n => "฿" + Math.round(n).toLocaleString("th-TH");
+const fmtNum = n => n.toLocaleString("th-TH");
+const fmtDate = s => { const d = parseISO(s); return isNaN(d) ? "-" : d.toLocaleDateString("th-TH", {year:"numeric", month:"short", day:"numeric"}); };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// ---------- Element refs ----------
+const tbody = document.getElementById("tableBody");
+const searchBox = document.getElementById("searchBox");
+const categoryFilter = document.getElementById("categoryFilter");
+const statusFilter = document.getElementById("statusFilter");
+const tableCount = document.getElementById("tableCount");
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const itemForm = document.getElementById("itemForm");
+const categoryOptions = document.getElementById("categoryOptions");
+const tableSection = document.getElementById("tableSection");
+
+let sortKey = "status";
+let sortDir = 1;
+
+function statusTagClass(status){
+  if(status===ST.EXPIRED) return "exp";
+  if(status===ST.CRIT) return "crit";
+  if(status===ST.WATCH) return "watch";
+  return "ok";
+}
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+// ---------- ตั้งตัวกรองจากการคลิกส่วนอื่นของหน้า ----------
+function applyFilter({q="", cat="", status=""}){
+  searchBox.value = q; categoryFilter.value = cat; statusFilter.value = status;
+  renderTable();
+  tableSection.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+// ---------- Render: hero stats ----------
+function renderHero(){
+  const totalValue = data.reduce((s,i)=>s+i.value,0);
+  const totalUnits = data.reduce((s,i)=>s+i.qty,0);
+  const nExp = data.filter(i=>i.status===ST.EXPIRED).length;
+  const nCrit = data.filter(i=>i.status===ST.CRIT).length;
+  const nWatch = data.filter(i=>i.status===ST.WATCH).length;
+  document.getElementById("totalValue").textContent = fmtBaht(totalValue);
+  document.getElementById("totalValueFoot").textContent = `รวม ${fmtNum(totalUnits)} หน่วย จาก ${data.length} รายการ`;
+  document.getElementById("totalSku").innerHTML = `${data.length} <small>รายการ</small>`;
+  document.getElementById("totalUnitsFoot").textContent = data.length ? `เฉลี่ย ${fmtBaht(totalValue/data.length)} ต่อรายการ` : "—";
+  document.getElementById("totalCritical").innerHTML = `${nExp+nCrit+nWatch} <small>รายการ</small>`;
+  document.getElementById("alertFoot").textContent = `${nExp ? `หมดอายุแล้ว ${nExp} · ` : ""}วิกฤต ${nCrit} · เฝ้าระวัง ${nWatch}`;
+  document.getElementById("updatedAt").textContent = TODAY.toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"});
+}
+
+// ---------- Render: blister alert strip ----------
+const BLISTER_MAX = 8;
+function renderBlister(){
+  const all = data
+    .filter(i=>i.status!==ST.OK)
+    .sort((a,b)=> STATUS_RANK[a.status]-STATUS_RANK[b.status] || a.days-b.days);
+  const shown = all.slice(0, BLISTER_MAX);
+
+  document.getElementById("alertNote").textContent = all.length > shown.length
+    ? `แสดง ${shown.length} จาก ${all.length} รายการที่ต้องติดตาม`
+    : `${all.length} รายการต้องติดตาม`;
+  const blisterEl = document.getElementById("blisterStrip");
+
+  if(shown.length===0){
+    blisterEl.innerHTML = `<div style="padding:20px; color:var(--ink-faint); font-size:13px;">ไม่มีรายการที่ต้องเฝ้าระวังในขณะนี้</div>`;
+    return;
+  }
+  blisterEl.innerHTML = shown.map(i => `
+      <button type="button" class="pill ${statusTagClass(i.status)}" data-code="${esc(i.code)}" title="คลิกเพื่อดูรายการนี้ในตาราง">
+        <div class="pill-status">${esc(i.status)}</div>
+        <div class="pill-name">${esc(i.name)}</div>
+        <div class="pill-detail">${reasonsOf(i).map(esc).join("<br>")}</div>
+      </button>`).join("");
+}
+
+// ---------- Render: category breakdown ----------
+function renderCategory(){
+  const catMap = {};
+  data.forEach(i=>{
+    if(!catMap[i.category]) catMap[i.category] = {value:0, count:0};
+    catMap[i.category].value += i.value;
+    catMap[i.category].count += 1;
+  });
+  const catList = Object.entries(catMap).sort((a,b)=>b[1].value-a[1].value);
+  const total = catList.reduce((s,c)=>s+c[1].value,0) || 1;
+
+  document.getElementById("categoryList").innerHTML = catList.length ? catList.map(([name, stat])=>{
+    const pct = stat.value/total*100;
+    return `
+    <div class="cat-row clickable" data-cat="${esc(name)}" title="คลิกเพื่อกรองตารางตามหมวดนี้">
+      <div class="cat-name">${esc(name)}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct.toFixed(1)}%"></div></div><span class="cat-pct">${pct.toFixed(0)}%</span></div>
+      <div class="cat-value">${fmtBaht(stat.value)}</div>
+      <div class="cat-count">${stat.count} SKU</div>
+    </div>`;
+  }).join("") : `<div style="padding:16px; color:var(--ink-faint); font-size:13px;">ยังไม่มีข้อมูล</div>`;
+
+  const currentFilter = categoryFilter.value;
+  categoryFilter.innerHTML = `<option value="">ทุกหมวดหมู่</option>` + catList.map(([name])=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
+  categoryFilter.value = catList.some(([n])=>n===currentFilter) ? currentFilter : "";
+  categoryOptions.innerHTML = catList.map(([name])=>`<option value="${esc(name)}">`).join("");
+}
+
+// ---------- Render: table ----------
+function renderTable(){
+  const q = searchBox.value.trim().toLowerCase();
+  const cat = categoryFilter.value;
+  const status = statusFilter.value;
+
+  const filtered = data.filter(i=>{
+    const matchesQ = !q || i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
+    const matchesCat = !cat || i.category === cat;
+    const matchesStatus = !status || (status === "__alert" ? i.status !== ST.OK : i.status === status);
+    return matchesQ && matchesCat && matchesStatus;
+  });
+
+  filtered.sort((a,b)=>{
+    if(sortKey === "status") return (STATUS_RANK[a.status]-STATUS_RANK[b.status] || a.days-b.days) * sortDir;
+    const va = a[sortKey], vb = b[sortKey];
+    if(typeof va === "string") return va.localeCompare(vb, "th") * sortDir;
+    return (va - vb) * sortDir;
+  });
+
+  document.querySelectorAll("thead th[data-key]").forEach(th=>{
+    th.classList.toggle("sorted", th.dataset.key === sortKey);
+    th.querySelector(".sort-ind").textContent = th.dataset.key === sortKey ? (sortDir === 1 ? "▲" : "▼") : "";
+  });
+
+  const isFiltered = q || cat || status;
+  tableCount.textContent = isFiltered ? `${filtered.length} จาก ${data.length} รายการ` : `${data.length} รายการ`;
+  document.getElementById("clearFilterBtn").style.display = isFiltered ? "" : "none";
+
+  if(filtered.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(i=>`
+    <tr>
+      <td class="mono">${esc(i.code)}</td>
+      <td>${esc(i.name)}</td>
+      <td>${esc(i.category)}</td>
+      <td class="mono num ${i.qty <= i.reorder ? "bad" : ""}">${fmtNum(i.qty)} ${esc(i.unit)}</td>
+      <td class="mono num">${fmtNum(i.reorder)}</td>
+      <td class="mono ${i.days <= 30 ? "bad" : ""}">${fmtDate(i.expiry)}</td>
+      <td class="mono num">${fmtBaht(i.value)}</td>
+      <td><span class="tag ${statusTagClass(i.status)}">${esc(i.status)}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" data-action="edit" data-code="${esc(i.code)}">แก้ไข</button>
+          <button class="icon-btn danger" data-action="delete" data-code="${esc(i.code)}">ลบ</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function renderAll(){
+  renderHero();
+  renderBlister();
+  renderCategory();
+  renderTable();
+}
+
+// ---------- Filters & sorting ----------
+searchBox.addEventListener("input", renderTable);
+categoryFilter.addEventListener("change", renderTable);
+statusFilter.addEventListener("change", renderTable);
+document.getElementById("clearFilterBtn").addEventListener("click", ()=>{ searchBox.value=""; categoryFilter.value=""; statusFilter.value=""; renderTable(); });
+
+document.querySelectorAll("thead th[data-key]").forEach(th=>{
+  th.insertAdjacentHTML("beforeend", ` <span class="sort-ind"></span>`);
+  th.addEventListener("click", ()=>{
+    const key = th.dataset.key;
+    if(sortKey === key){ sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+    renderTable();
+  });
+});
+
+// คลิกการ์ดสรุป / เม็ดยาในแถบแจ้งเตือน / แถวหมวดหมู่ → กรองตาราง
+document.getElementById("cardAll").addEventListener("click", ()=>applyFilter({}));
+document.getElementById("cardSku").addEventListener("click", ()=>applyFilter({}));
+document.getElementById("cardAlert").addEventListener("click", ()=>applyFilter({status:"__alert"}));
+document.getElementById("blisterStrip").addEventListener("click", e=>{
+  const pill = e.target.closest(".pill[data-code]"); if(pill) applyFilter({q: pill.dataset.code});
+});
+document.getElementById("categoryList").addEventListener("click", e=>{
+  const row = e.target.closest(".cat-row[data-cat]"); if(row) applyFilter({cat: row.dataset.cat});
+});
+
+// ---------- Add / Edit modal ----------
+function openModal(editCode){
+  itemForm.reset();
+  const editing = editCode ? data.find(i=>i.code===editCode) : null;
+  document.getElementById("f-editingCode").value = editing ? editing.code : "";
+  modalTitle.textContent = editing ? "แก้ไขรายการยา" : "เพิ่มรายการยา";
+  document.getElementById("f-code").value = editing ? editing.code : "";
+  document.getElementById("f-code").disabled = !!editing;
+  document.getElementById("f-name").value = editing ? editing.name : "";
+  document.getElementById("f-category").value = editing ? editing.category : "";
+  document.getElementById("f-unit").value = editing ? editing.unit : "";
+  document.getElementById("f-qty").value = editing ? editing.qty : "";
+  document.getElementById("f-reorder").value = editing ? editing.reorder : "";
+  document.getElementById("f-price").value = editing ? editing.price : "";
+  document.getElementById("f-expiry").value = editing ? editing.expiry : "";
+  document.getElementById("formError").textContent = "";
+  modalOverlay.classList.add("open");
+  document.getElementById(editing ? "f-name" : "f-code").focus();
+}
+function closeModal(){ modalOverlay.classList.remove("open"); }
+
+document.getElementById("openAddBtn").addEventListener("click", ()=>openModal(null));
+document.getElementById("modalClose").addEventListener("click", closeModal);
+document.getElementById("cancelBtn").addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", (e)=>{ if(e.target === modalOverlay) closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key === "Escape") closeModal(); });
+
+itemForm.addEventListener("submit", (e)=>{
+  e.preventDefault();
+  const editingCode = document.getElementById("f-editingCode").value;
+  const code = editingCode || document.getElementById("f-code").value.trim();
+
+  if(!editingCode && data.some(i=>i.code.toLowerCase() === code.toLowerCase())){
+    document.getElementById("formError").textContent = "รหัสยานี้มีอยู่แล้วในระบบ กรุณาใช้รหัสอื่น";
+    document.getElementById("f-code").focus();
+    return;
+  }
+
+  const newItem = enrich({
+    code,
+    name: document.getElementById("f-name").value.trim(),
+    category: document.getElementById("f-category").value.trim(),
+    unit: document.getElementById("f-unit").value.trim(),
+    qty: document.getElementById("f-qty").value,
+    reorder: document.getElementById("f-reorder").value,
+    price: document.getElementById("f-price").value,
+    expiry: document.getElementById("f-expiry").value,
+  });
+
+  data = editingCode ? data.map(i => i.code === editingCode ? newItem : i) : [...data, newItem];
+  closeModal();
+  renderAll();
+  showToast(editingCode ? `บันทึกการแก้ไข "${newItem.name}" แล้ว` : `เพิ่ม "${newItem.name}" แล้ว`);
+});
+
+// ---------- Row edit / delete (ลบแล้วกดเลิกทำได้) ----------
+let lastDeleted = null;
+tbody.addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-action]");
+  if(!btn) return;
+  const code = btn.dataset.code;
+  if(btn.dataset.action === "edit"){
+    openModal(code);
+  } else if(btn.dataset.action === "delete"){
+    const idx = data.findIndex(i=>i.code===code);
+    if(idx === -1) return;
+    lastDeleted = { item: data[idx], idx };
+    data = data.filter(i=>i.code!==code);
+    renderAll();
+    const t = document.getElementById("toast");
+    t.innerHTML = `ลบ "${esc(lastDeleted.item.name)}" แล้ว <button type="button" id="undoBtn">เลิกทำ</button>`;
+    t.classList.add("show");
+    clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove("show"), 6000);
+  }
+});
+document.getElementById("toast").addEventListener("click", e=>{
+  if(e.target.id !== "undoBtn" || !lastDeleted) return;
+  data = [...data.slice(0,lastDeleted.idx), lastDeleted.item, ...data.slice(lastDeleted.idx)];
+  lastDeleted = null;
+  renderAll();
+  showToast("กู้คืนรายการแล้ว");
+});
+
+// ---------- Export / Import ----------
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const exportData = data.map(({value, days, status, ...rest})=>rest);
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Pharmacy-Stock-${toISO(new Date())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+const importFile = document.getElementById("importFile");
+document.getElementById("importBtn").addEventListener("click", ()=>importFile.click());
+importFile.addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const parsed = JSON.parse(ev.target.result);
+      if(!Array.isArray(parsed)) throw new Error("รูปแบบไฟล์ไม่ถูกต้อง");
+      const ok = parsed.filter(r => r && r.code && r.name && !isNaN(parseISO(r.expiry)));
+      if(!ok.length) throw new Error("ไม่พบรายการที่มีรหัสยา ชื่อยา และวันหมดอายุครบ");
+      data = ok.map(r => enrich({category:"ไม่ระบุหมวด", unit:"หน่วย", ...r, code:String(r.code), name:String(r.name)}));
+      renderAll();
+      showToast(`นำเข้า ${data.length} รายการ${ok.length < parsed.length ? ` (ข้าม ${parsed.length-ok.length} รายการที่ข้อมูลไม่ครบ)` : ""}`);
+    }catch(err){
+      showToast("นำเข้าไฟล์ไม่ได้: " + err.message);
+    }
+    importFile.value = "";
+  };
+  reader.readAsText(file);
+});
+
+renderAll();
+</script>
+</body>
+</html>
