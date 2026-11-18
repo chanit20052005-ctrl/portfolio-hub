@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รวมผลงาน · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F4; --surface:#FFFFFF; --ink:#16232B; --ink-soft:#55656E; --ink-faint:#8B9AA2; --line:#DDE4E6;
+    --radius:16px;
+    --font:'IBM Plex Sans Thai','Sarabun','Leelawadee UI',Tahoma,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.55;}
+  .wrap{max-width:1080px;margin:0 auto;padding:44px 24px 56px;}
+
+  header{margin-bottom:30px;}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.25;}
+  .lede{color:var(--ink-soft);font-size:15px;margin-top:8px;max-width:640px;}
+  .note{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:12.5px;color:#7A5A1E;background:#FBF1DC;border:1px solid #F0DDB4;padding:6px 12px;border-radius:999px;}
+  .note i{width:7px;height:7px;border-radius:50%;background:#C98A3A;display:inline-block;}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .card{
+    display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;text-decoration:none;color:inherit;transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(22,35,43,.12);border-color:var(--c);}
+  .card:focus-visible{outline:3px solid var(--c);outline-offset:3px;}
+  .thumb{height:132px;background:var(--c-deep);position:relative;padding:46px 20px 0;display:flex;align-items:flex-end;gap:7px;}
+  .thumb .no{position:absolute;top:14px;left:20px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:rgba(255,255,255,.7);}
+  .thumb .kind{position:absolute;top:12px;right:16px;font-size:11.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);padding:3px 10px;border-radius:999px;}
+  .thumb span{flex:1;border-radius:4px 4px 0 0;background:var(--c-light);opacity:.9;}
+  .thumb span:nth-child(odd){background:var(--c-accent);}
+  .body{padding:20px 20px 18px;display:flex;flex-direction:column;flex:1;}
+  .card h2{font-size:18px;font-weight:700;line-height:1.35;}
+  .card p{font-size:13.5px;color:var(--ink-soft);margin-top:8px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+  .chips li{list-style:none;font-size:11.5px;font-weight:500;color:var(--c-deep);background:var(--c-pale);padding:3px 10px;border-radius:999px;}
+  .go{margin-top:auto;padding-top:18px;}
+  .go b{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--c-deep);color:#fff;font-size:14.5px;font-weight:600;padding:12px 16px;border-radius:10px;}
+  .card:hover .go b{background:var(--c);}
+  .go svg{transition:transform .16s ease;}
+  .card:hover .go svg{transform:translateX(3px);}
+
+  .c-pr{--c:#2E8B85;--c-deep:#173330;--c-light:#5FBDB2;--c-accent:#2E8B85;--c-pale:#E1F0EE;}
+  .c-fin{--c:#2A5788;--c-deep:#11233F;--c-light:#B8892F;--c-accent:#3F6FA3;--c-pale:#E6EDF5;}
+  .c-ph{--c:#2F7A6B;--c-deep:#1D4F45;--c-light:#9CCFC2;--c-accent:#C98A3A;--c-pale:#E4F0EC;}
+
+  footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+
+  @media (max-width:900px){ .grid{grid-template-columns:1fr;} .thumb{height:104px;} }
+  @media (max-width:560px){ .wrap{padding:28px 16px 40px;} h1{font-size:25px;} .lede{font-size:14px;} }
+  @media (prefers-reduced-motion:reduce){ .card,.go svg{transition:none;} .card:hover{transform:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Portfolio · Demo</div>
+    <h1>รวมผลงานระบบที่พัฒนา</h1>
+    <p class="lede">เลือกโปรเจกต์ด้านล่างเพื่อเปิดทดลองใช้งานได้ทันที ไม่ต้องล็อกอินและไม่ต้องติดตั้งอะไร</p>
+    <div class="note"><i></i>ทุกโปรเจกต์เป็นเวอร์ชัน Demo · ข้อมูลที่แสดงเป็นข้อมูลสมมติทั้งหมด</div>
+  </header>
+
+  <main class="grid">
+
+    <a class="card c-pr" href="PR-Manager-Demo-V1.html">
+      <div class="thumb" aria-hidden="true">
+        <div class="no">01</div><div class="kind">ระบบจัดซื้อ</div>
+        <span style="height:42%"></span><span style="height:70%"></span><span style="height:55%"></span><span style="height:88%"></span><span style="height:48%"></span><span style="height:64%"></span><span style="height:36%"></span>
+      </div>
+      <div class="body">
+        <h2>PR Manager — ระบบจัดการรายการสั่งซื้อ</h2>
+        <p>รวมรายการสั่งซื้อและเบิกอุปกรณ์สำนักงานจากทุกสาขาไว้ที่เดียว อ่านข้อมูลจากไฟล์ PDF และ Excel ให้อัตโนมัติ แล้วสรุปเป็นภาพรวมและรายงาน</p>
+        <ul class="chips"><li>Dashboard</li><li>อ่าน PDF / Excel</li><li>รายงานตามสาขา</li><li>Export Excel</li></ul>
+        <div class="go"><b>เปิด Demo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></div>
+      </div>
+    </a>
+
+    <a class="card c-fin" href="Dashboard-Finance-Demo-V1.html">
+      <div class="thumb" aria-hidden="true">
+        <div class="no">02</div><div class="kind">การเงิน</div>
+        <span style="height:58%"></span><span style="height:40%"></span><span style="height:66%"></span><span style="height:46%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:90%"></span>
+      </div>
+      <div class="body">
+        <h2>Dashboard การเงินโรงพยาบาล</h2>
+        <p>อัปโหลดไฟล์ Excel แล้วระบบสรุปรายรับ รายจ่าย และงบประมาณให้ เทียบไตรมาสปีต่อปีได้ พร้อมหน้ารายงานสำหรับเสนอผู้บริหาร</p>
+        <ul class="chips"><li>รายรับ–รายจ่าย</li><li>งบประมาณตามหมวด</li><li>เทียบไตรมาส</li><li>สรุปผู้บริหาร</li></ul>
+        <div class="go"><b>เปิด Demo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></div>
+      </div>
+    </a>
+
+    <a class="card c-ph" href="Pharmacy-Stock-Demo-V1.html">
+      <div class="thumb" aria-hidden="true">
+        <div class="no">03</div><div class="kind">คลังยา</div>
+        <span style="height:80%"></span><span style="height:34%"></span><span style="height:62%"></span><span style="height:28%"></span><span style="height:72%"></span><span style="height:44%"></span><span style="height:56%"></span>
+      </div>
+      <div class="body">
+        <h2>แดชบอร์ดคลังยาสมุนไพร</h2>
+        <p>ติดตามยาคงคลังของงานแพทย์แผนไทย แจ้งเตือนรายการที่ต่ำกว่าจุดสั่งซื้อหรือใกล้หมดอายุ เพิ่ม แก้ไข และกรองรายการได้ในหน้าเดียว</p>
+        <ul class="chips"><li>สถานะสต็อก</li><li>แจ้งเตือนหมดอายุ</li><li>มูลค่าตามหมวด</li><li>เพิ่ม / แก้ไขรายการ</li></ul>
+        <div class="go"><b>เปิด Demo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></div>
+      </div>
+    </a>
+
+  </main>
+
+  <footer>
+    <span>กดปุ่มย้อนกลับของเบราว์เซอร์เพื่อกลับมาหน้านี้</span>
+    <span>ข้อมูลใน Demo รีเซ็ตทุกครั้งที่รีเฟรชหน้า</span>
+  </footer>
+
+</div>
+</body>
+</html>
