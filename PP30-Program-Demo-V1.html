@@ -77,6 +77,23 @@ header,nav,.noprint{display:none!important}
 .btn.pri{border:0;background:#0F6B6B;color:#FFFFFF;font-weight:500}
 [data-body]{display:flex;flex-direction:column;gap:16px;min-width:0}
 @media print{[data-body]{display:block!important}#saleRows{display:none}}
+
+/* ---------- V2: ปรับสำหรับมือถือ ---------- */
+@media screen and (max-width:760px){
+header{padding:10px 14px!important;gap:6px 12px!important}
+#hdPeriod{font-size:15px!important}
+.side{position:sticky!important;top:0;z-index:20;flex-wrap:nowrap!important;overflow-x:auto;gap:6px!important;padding:8px 10px!important;scrollbar-width:none;-webkit-overflow-scrolling:touch;box-shadow:0 2px 8px rgba(22,32,42,.08)}
+.side::-webkit-scrollbar{display:none}
+.side .grp{display:none}
+.side .tab{flex:0 0 auto;white-space:nowrap;min-height:38px;font-size:13.5px;padding:0 12px;border-left:0;border-radius:999px;border:1px solid #DDE2E7}
+.side .tab[aria-pressed="true"]{background:#0F6B6B;color:#FFFFFF;border-color:#0F6B6B}
+main{padding:14px 12px!important}
+.cobtn{min-height:40px;min-width:54px;padding:0 12px}
+.btn{min-height:40px;padding:0 12px}
+th,td{font-size:12.5px;padding:5px 8px}
+h2{font-size:15px}
+}
+@media print{.pp{zoom:1!important}}
 </style>
 <style id="pg"></style>
 </head>
@@ -424,13 +441,16 @@ function render(){var d=S.co[co],o=d?calc(d):{has:false};
     w.innerHTML=h;var sub=w.parentNode.querySelector('[data-sub]');if(sub){var extra='';if(o.has){if(t==='attach')extra=' · '+d.att.length+' สถานประกอบการ';if(t==='car')extra=' · '+d.car.map(function(e){return estName(d,e)+' '+e.rows.length+' ใบ'}).join(' + ');if(t==='exp')extra=' · '+d.exp.map(function(e){return estName(d,e)+' '+e.rows.length+' ใบ'}).join(' + ')}sub.textContent=SUBS[t]+extra}});
   var per='';ORDER.forEach(function(k){if(!per&&S.co[k]&&S.co[k].period)per=perLabel(S.co[k].period)});$('hdPeriod').textContent=per?'ภ.พ.30 · '+per:'ระบบจัดทำ ภ.พ.30';
   $('hdSub').textContent=ORDER.filter(function(k){return S.co[k]&&S.co[k].att.length}).map(function(k){return KEYS[k].short}).join(' · ')||'ยังไม่มีข้อมูล นำเข้าเอกสารเพื่อเริ่มใช้งาน';
-  renderFiles()}
+  renderFiles();fitPapers()}
 function renderFiles(){var h='';if(!S.files.length){$('fileList').innerHTML='';return}
   var n={};S.files.forEach(function(f){n[f.kind]=(n[f.kind]||0)+1});
   h+='<div style="font-size:13px;color:#55616D">ตัวอย่างรายการไฟล์ที่นำเข้า '+S.files.length+' ไฟล์ · '+Object.keys(n).map(function(k){return esc(k.split(' · ')[0])+' '+n[k]}).slice(0,8).join(' · ')+'</div><div class="box" style="max-height:480px;overflow:auto"><table><thead><tr><th>ไฟล์</th><th>ประเภทที่ตรวจพบ</th><th>บริษัท</th><th>ผล</th></tr></thead><tbody>';
   S.files.forEach(function(f){h+='<tr><td class="w" title="'+esc(f.path)+'">'+esc(f.name)+'</td><td>'+esc(f.kind)+'</td><td>'+(f.co?esc(f.co)+(f.inferred?' <span style="color:#55616D">(ตามโฟลเดอร์)</span>':''):'-')+'</td><td class="w">'+esc(f.note)+'</td></tr>'});
   $('fileList').innerHTML=h+'</tbody></table></div>'}
-function go(k){cur=k;document.querySelectorAll('section[data-tab]').forEach(function(x){x.hidden=x.getAttribute('data-tab')!==k});document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-pressed',t.getAttribute('data-go')===k?'true':'false')});window.scrollTo(0,0)}
+/* V2: ย่อหน้ากระดาษ A4 ให้พอดีความกว้างจอ (มือถือ) — ตอนพิมพ์กลับเป็นขนาดจริง */
+function fitPapers(){document.querySelectorAll('.box > .pp').forEach(function(p){p.style.zoom='';var bw=p.parentNode.clientWidth,pw=p.offsetWidth;if(bw>0&&pw>bw+2)p.style.zoom=(bw/pw).toFixed(4)})}
+window.addEventListener('resize',function(){clearTimeout(fitPapers._t);fitPapers._t=setTimeout(fitPapers,120)});
+function go(k){cur=k;document.querySelectorAll('section[data-tab]').forEach(function(x){x.hidden=x.getAttribute('data-tab')!==k});document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-pressed',t.getAttribute('data-go')===k?'true':'false')});window.scrollTo(0,0);var at=document.querySelector('.tab[aria-pressed="true"]');if(at&&window.matchMedia('(max-width:760px)').matches&&at.scrollIntoView)at.scrollIntoView({block:'nearest',inline:'center'});fitPapers()}
 function pick(k){co=k;render()}
 /* ---------- drag & drop with folders ---------- */
 function walk(entry,root,path,out){return new Promise(function(res){if(entry.isFile){entry.file(function(f){f._root=root;f._path=path+f.name;out.push(f);res()},function(){res()})}

@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- V2: defer = ไม่บล็อกการแสดงหน้า ระหว่างรอโหลดไลบรารีจาก CDN (บนมือถือเน็ตช้าจะเห็นหน้าเร็วขึ้น) -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
     --bg:#F5F9F8; --surface:#FFFFFF; --sidebar:#173330; --sidebar-hover:#234742;
@@ -211,13 +212,59 @@
     .kpi-grid{grid-template-columns:1fr 1fr !important;}
     .filters > div[style*="margin-left:auto"]{margin-left:0 !important;}
     .filters select,.filters .field-input{max-width:100%;}
+
+    /* ----- V2: ปรับเพิ่มสำหรับมือถือ ----- */
+    /* เมนูบนติดหัวจอเสมอ เลื่อนลงแล้วยังกดสลับหน้าได้ */
+    .sidebar{position:sticky;top:0;z-index:50;scrollbar-width:none;-webkit-overflow-scrolling:touch;box-shadow:0 2px 10px rgba(0,0,0,.18);}
+    .sidebar::-webkit-scrollbar{display:none;}
+    .brand .stamp{width:28px;height:28px;font-size:11px;}
+    .brand-name{font-size:14px;}
+    .nav-item,.sidebar-exit-btn{font-size:13px;gap:6px;}
+    .nav-item svg,.sidebar-exit-btn svg{width:16px;height:16px;}
+    .page-head{margin-bottom:14px;}
+    .page-title,#page-dashboard .page-title{font-size:20px;}
+    .page-desc{font-size:12.5px;}
+    #page-dashboard .page-head{margin-bottom:16px;}
+    /* ตัวกรอง: เต็มความกว้าง 2 คอลัมน์ */
+    .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .filters > *{min-width:0;}
+    .filters > div[style*="margin-left:auto"], #ordSearch, .filters > .date-field-group{grid-column:auto;}
+    #ordSearch{width:100% !important;grid-column:1 / -1;}
+    #page-orders .filters > div[style*="margin-left:auto"]{grid-column:1 / -1;font-size:14px !important;}
+    .filters > span{display:none;} /* คำว่า "ถึง" ระหว่างช่องวันที่ */
+    .filters .field-input, .filters select, .filters button.btn{width:100%;justify-content:center;}
+    #page-dashboard .filters > div[style*="margin-left:auto"]{grid-column:1 / -1;}
+    #page-dashboard .filters > div[style*="margin-left:auto"] .btn{width:100%;}
+    /* แท็บในหน้าตั้งค่า/อัปโหลด: เลื่อนซ้ายขวาแทนการขึ้นหลายบรรทัด */
+    #page-settings > .filters, #page-upload > .filters{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+    #page-settings > .filters .btn, #page-upload > .filters .btn{flex:0 0 auto;width:auto;white-space:nowrap;}
+    /* KPI */
+    #page-dashboard .kpi-grid{gap:10px;}
+    #page-dashboard .kpi{padding:14px;}
+    #page-dashboard .kpi-icon{width:36px;height:36px;margin-bottom:8px;}
+    #page-dashboard .kpi-value{font-size:21px;}
+    #page-dashboard .kpi:last-child{grid-column:1 / -1;}
+    #page-reports .kpi-grid{grid-template-columns:1fr !important;}
+    /* การ์ด/ตาราง */
+    .card,#page-dashboard .card{padding:14px;}
+    table{font-size:12.5px;}
+    td{padding:8px 6px;}
+    #ordTable th,#ordTable td{white-space:nowrap;}
+    .settings-add-row{flex-wrap:wrap;}
+    .settings-add-row .field-input{max-width:none;flex:1 1 100%;}
+    .review-fields{grid-template-columns:1fr;}
+    .dropzone{padding:24px 14px;}
+    /* กันมือถือ iPhone ซูมเข้าเองเวลาแตะช่องกรอก (ต้อง ≥16px) */
+    input,select,.field-input,.items-table input{font-size:16px !important;}
+    .role-badge{font-size:11px;padding:4px 10px;bottom:10px;left:10px;opacity:.92;pointer-events:none;}
+    .toast{left:12px;right:12px;bottom:46px;}
   }
 </style>
 </head>
 <body>
 
 <!-- (2026-08 ข้อ 69) ด่านล็อกอินก่อนเข้าแอป — ใช้ "ชื่อผู้ใช้" ธรรมดา ไม่โชว์คำว่าอีเมลเลย (ข้างในแปลงเป็นอีเมลปลอมให้เองตอนส่งไป Firebase ดูฟังก์ชัน usernameToEmail() ท้ายสคริปต์) -->
-<div id="authGate">
+<div id="authGate" style="display:none;">
   <div class="auth-card">
     <div style="text-align:center;margin-bottom:20px;">
       <div class="stamp" style="margin:0 auto 10px;">PR</div>
@@ -237,7 +284,7 @@
   </div>
 </div>
 
-<div class="app" id="appRoot" style="display:none;">
+<div class="app" id="appRoot">
   <!-- (2026-08 ข้อ 71) ป้ายบอกบทบาท — ลอยตายตัวมุมขวาบน อยู่นอก .sidebar/.main จึงเห็นทุกหน้าโดยไม่ต้องแก้ทุกหน้า -->
   <div class="role-badge admin">Demo · ข้อมูลสมมติ</div>
   <div class="sidebar">
@@ -686,6 +733,11 @@ nav.forEach(btn=>{
     // สาเหตุ: ปุ่มเมนูซ้ายตัวนี้ (ต่างจากหน้า dashboard/orders/reports/settings ด้านบน) ไม่เคยเรียก renderQueue()/renderReview() ซ้ำตอนสลับมาหน้านี้เลยตั้งแต่แรก — ถ้า reviewPanel เคย render ไปแล้วก่อนหน้านี้ (มีไฟล์ถูกเลือกค้างอยู่) เนื้อหาที่เห็นจะเป็น HTML เก่าที่ค้างมาตั้งแต่ครั้งก่อน ไม่ปรับตามข้อมูลล่าสุด (เช่น รายชื่อผู้จำหน่ายมาตรฐานที่เพิ่งเพิ่ม, สาขา/แผนกที่เพิ่งแก้ในตั้งค่า ก็เจอปัญหาเดียวกัน)
     // แก้โดยเรียก renderQueue()/renderReview() ซ้ำทุกครั้งที่สลับมาหน้านี้เหมือนหน้าอื่นๆ — ปลอดภัย ไม่มีผลข้างเคียง เพราะทั้งสองฟังก์ชันแค่วาดใหม่จาก state ปัจจุบัน (queue/selectedId) ไม่ได้ไปแก้ข้อมูลอะไร
     if(page==='upload'){ renderQueue(); renderReview(); }
+    // V2: บนมือถือ เลื่อนเมนูให้ปุ่มที่เลือกอยู่ในจอ และกลับขึ้นต้นหน้าเสมอ
+    if(window.matchMedia('(max-width:800px)').matches){
+      btn.scrollIntoView({ block:'nearest', inline:'center' });
+      window.scrollTo({ top:0 });
+    }
   });
 });
 
@@ -1534,6 +1586,8 @@ if(window.pdfjsLib || window['pdfjs-dist/build/pdf']){
 // อ่านข้อความจริงจากทุกหน้าของ PDF (ไม่ใช้ OCR) — คืนค่าเป็น array ของข้อความแต่ละหน้า
 async function extractPdfPages(file){
   const pdfjsLib = window.pdfjsLib || window['pdfjs-dist/build/pdf'];
+  if(!pdfjsLib) throw new Error('ยังโหลดตัวอ่าน PDF ไม่เสร็จ (ต้องต่ออินเทอร์เน็ต) — ลองใหม่อีกครั้ง');
+  if(!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const buf = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({data:buf}).promise;
   const pages = [];
@@ -3099,7 +3153,11 @@ renderSettingsLists();
 //  - ปุ่ม "ดาวน์โหลดไฟล์สำรอง (.json)"/"กู้คืนจากไฟล์สำรอง" ในหน้าตั้งค่า > สำรอง/กู้คืนข้อมูล ยังอยู่ครบเหมือนเดิม เป็นวิธีหลักที่ผู้ใช้ต้องใช้ถ้าต้องการเก็บรายการสั่งซื้อข้ามการรีเฟรช/ข้ามเครื่อง (ต้องกดดาวน์โหลดเองเป็นระยะๆ เหมือนก่อนข้อ 37)
 const AUTOSAVE_KEY = 'pr_demo_autosave_v1';
 // เรียกฟังก์ชันนี้ทุกครั้งหลัง master list ถูกแก้ (เพิ่ม/แก้/ลบสาขา-แผนก-ผู้จำหน่าย-หมวดหมู่, บันทึกอัตรา VAT) — ยังถูกเรียกอยู่ในจุดเดิมทั้งหมดที่เคยเรียกตอนข้อ 37/38 รวมถึงจุดที่แก้ ordersData ด้วย (ไม่เป็นไร แค่บันทึกซ้ำ master data เดิมไปเฉยๆ ไม่มีผลเสีย)
-function persistAppData(){
+// V2 (Demo): ไม่เก็บอะไรลงเบราว์เซอร์ — รีเฟรชแล้วกลับเป็นข้อมูลตั้งต้นเสมอ (ตรงกับข้อความในหน้ารวมผลงาน)
+// และลบค่าที่ V1 เคยเก็บค้างไว้ในเบราว์เซอร์ที่เคยเปิดมาแล้ว
+try{ localStorage.removeItem(AUTOSAVE_KEY); localStorage.removeItem('pr_demo_line_notify_v1'); }catch(e){}
+function persistAppData(){ return; }
+function persistAppData_V1_unused(){
   try{
     const data = { _type:'po_prototype_autosave', _version:2, savedAt: new Date().toISOString(), masterBranches, masterDepts, masterVendors, vatRate, masterProducts };
     localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data));
@@ -3129,7 +3187,7 @@ function loadAutosavedAppData(){
     return false;
   }
 }
-if(loadAutosavedAppData()){
+if(false && loadAutosavedAppData()){
   // โหลดสำเร็จ (มี master data ที่เคยบันทึกไว้จากรอบก่อน) — re-render เฉพาะส่วนที่ผูกกับ master list (ordersData ไม่เปลี่ยนแล้วในข้อ 41 จึงไม่ต้อง re-render หน้า Dashboard/Orders/Reports ซ้ำ)
   renderSettingsLists();
   populateDashFilters();
@@ -3148,7 +3206,7 @@ function loadLineNotifySettings(){
   try{ const o = JSON.parse(localStorage.getItem(LINE_NOTIFY_KEY) || '{}'); return { enabled: !!o.enabled, url: String(o.url||'') }; }
   catch(e){ return { enabled:false, url:'' }; }
 }
-function saveLineNotifySettings(st){ try{ localStorage.setItem(LINE_NOTIFY_KEY, JSON.stringify(st)); return true; }catch(e){ return false; } }
+function saveLineNotifySettings(st){ return true; } // V2 (Demo): ไม่เก็บค่าลงเบราว์เซอร์
 function isValidLineRelayUrl(u){ return /^https:\/\/script\.google(usercontent)?\.com\/.+/.test(u) && /[?&]key=[^&]+/.test(u); }
 function setLineStatus(msg, kind){
   const el = document.getElementById('lineNotifyStatus'); if(!el) return;

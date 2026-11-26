@@ -617,6 +617,69 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     .budget-row .bar{height:8px;}
   }
 
+  /* =====================================================================
+     V2: ปรับสำหรับมือถือ (เฉพาะหน้าจอ ไม่กระทบตอนพิมพ์)
+     ===================================================================== */
+  @media screen and (max-width:1080px){
+    .app-shell{align-items:stretch;}
+    .main-col,.summary-col{width:100%;max-width:100%;min-width:0;}
+  }
+  @media screen and (max-width:760px){
+    .wrap{padding:14px 12px 72px;}
+    .doc-header{margin-bottom:12px;}
+    .doc-header-top{gap:8px;}
+    .doc-title h1{font-size:16px;line-height:1.4;}
+    .doc-meta{text-align:left;font-size:11px;line-height:1.5;}
+    .doc-rule{margin-top:8px;}
+    .app-shell{gap:12px;}
+    /* แก้เนื้อหาบางแท็บ (รายงานประจำวัน/เทียบไตรมาส/สรุปรายรับ) กว้างเกินจอจนต้องเลื่อนซ้ายขวาทั้งหน้า */
+    .app-shell{align-items:stretch;}
+    .main-col,.summary-col{width:100%;max-width:100%;min-width:0;}
+    /* แถบข้าง → แถบเมนูแนวนอนเลื่อนซ้ายขวา */
+    .sidebar{padding:10px;gap:10px;border-radius:12px;}
+    .brand{padding:0 2px 8px;gap:8px;}
+    .brand .logo{width:30px;height:30px;}
+    .brand .name br{display:none;}
+    .brand .name{font-size:13px;}
+    .brand .sub{font-size:9.5px;}
+    .tab-nav, .tab-nav{flex-direction:row !important;flex-wrap:nowrap !important;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+    .tab-nav::-webkit-scrollbar{display:none;}
+    .tab-nav .tab-btn{flex:0 0 auto !important;width:auto !important;white-space:nowrap;padding:8px 12px;font-size:12.5px;gap:6px;}
+    .tab-btn .ic{width:15px;height:15px;}
+    .sidebar-actions{flex-direction:row !important;flex-wrap:nowrap !important;gap:6px;padding-top:10px;}
+    .sidebar-actions .btn{flex:1 1 0 !important;width:auto !important;padding:8px 6px;font-size:11.5px;gap:4px;}
+    .sidebar-actions .btn .ic{width:14px;height:14px;}
+    .sidebar-credit{padding-top:8px;font-size:10px;}
+    .sidebar-credit b{display:inline;margin-left:4px;font-size:10.5px;}
+    /* การ์ด/แผง */
+    .panel{padding:14px 14px 10px;}
+    .panel h2,.table-panel h2{font-size:13.5px;}
+    .table-panel .head{padding:12px 14px 10px;}
+    .chart-holder{height:220px;}
+    thead th, tbody td{padding:7px 10px;}
+    .kpi-value{font-size:20px;}
+    .filter-row{gap:8px;}
+    .filter-row select{max-width:100%;}
+    .daily-summary-badge{margin-left:0;width:100%;}
+    #tab-daily .head .btn{padding:8px 12px;}
+    .sigma-row{padding:10px 16px;}
+    /* สรุปผู้บริหาร */
+    .exec-sheet{padding:18px 14px;}
+    .exec-head h2{font-size:16px;}
+    .exec-table th,.exec-table td{padding:5px 7px;}
+    .exec-total-table{min-width:0;width:100%;}
+    .exec-sign .line{padding-top:28px;}
+    /* กันมือถือ iPhone ซูมเข้าเองเวลาแตะช่องกรอก (ต้อง ≥16px) */
+    input, select, .cell-input, .filter-row select{font-size:16px !important;}
+    .demo-badge{left:auto !important;right:10px !important;bottom:10px !important;font-size:11px !important;padding:4px 10px !important;opacity:.92;}
+  }
+  @media screen and (max-width:560px){
+    .exec-stats{grid-template-columns:1fr;gap:8px;}
+    .exec-stat{display:flex;justify-content:space-between;align-items:baseline;text-align:left;padding:10px 12px;}
+    .exec-stat .l{margin:0;}
+    .upload-card{padding:16px 14px;}
+  }
+
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-thumb{background:#CBC2A8;border-radius:4px;}
 </style>
@@ -706,7 +769,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <input type="file" id="inputIncomeSummary" accept=".xlsx,.xls">
       </div>
     </div>
-    <div style="text-align:center;margin-top:6px;">
+    <div style="display:none;">
       <button class="btn btn-outline" id="demoBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg><span>ดูตัวอย่างข้อมูล (จำลอง)</span></button>
     </div>
   </div>
@@ -838,7 +901,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <tbody id="incomeTableBody"><tr class="empty-row"><td colspan="6">ยังไม่มีข้อมูล — อัปโหลดไฟล์ "สรุปรายรับรวม"</td></tr></tbody>
         </table>
       </div>
-      <div class="sub-note" style="padding:10px 22px 16px;">* คอลัมน์ "เลขที่ใบเสร็จ" ไม่มีอยู่ในไฟล์ "สรุปรายรับรวม" (ชีตนี้สรุปเป็นรายเดือน ไม่ได้เก็บเลขที่ใบเสร็จ) — เลขที่ใบเสร็จแต่ละรายการดูได้ในแท็บ "รายงานประจำวัน" แทนครับ</div>
+      <div class="sub-note" style="padding:10px 22px 16px;">* คอลัมน์ "เลขที่ใบเสร็จ" ไม่มีอยู่ในไฟล์ "สรุปรายรับรวม" (ชีตนี้สรุปเป็นรายเดือน ไม่ได้เก็บเลขที่ใบเสร็จ) — เลขที่ใบเสร็จแต่ละรายการดูได้ในแท็บ "รายงานประจำวัน" แทน</div>
     </div>
   </div>
 
@@ -1107,7 +1170,15 @@ function switchTab(name){
   renderSigmaCard();
 }
 document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  btn.addEventListener('click', () => {
+    switchTab(btn.dataset.tab);
+    // V2: บนมือถือ เมนูอยู่ด้านบน — กดแล้วเลื่อนเมนูให้ปุ่มที่เลือกอยู่ในจอ และพาไปที่เนื้อหา
+    if(window.matchMedia('(max-width:760px)').matches){
+      btn.scrollIntoView({ block:'nearest', inline:'center' });
+      const main = document.querySelector('.main-col');
+      if(main) window.scrollTo({ top: main.getBoundingClientRect().top + window.scrollY - 8, behavior:'smooth' });
+    }
+  });
 });
 
 function setupUploadCard({ cardId, inputId, statusId, expectedSheetKeyword, onParse }){
@@ -1840,8 +1911,10 @@ function populateMomMonthPickers(){
   const latestIdx = months.findIndex(m => m.key === latestKey);
   const toIdx = latestIdx !== -1 ? latestIdx : months.length-1;
   const fromIdx = Math.max(0, toIdx - 1);
-  selA.value = String(months[toIdx].key);
-  selB.value = String(months[fromIdx].key);
+  // V2: เดือนหลัก (ฐาน 100%) = เดือนก่อนหน้า · เดือนเปรียบเทียบ = เดือนล่าสุด
+  // เดิมสลับกัน ทำให้รายรับที่ "เพิ่มขึ้น" แสดงเป็น ▼ สีแดง
+  selA.value = String(months[fromIdx].key);
+  selB.value = String(months[toIdx].key);
 }
 
 // goodWhenUp: true ถ้าค่าที่เพิ่มขึ้นถือว่าดี (เช่น รายรับ), false ถ้าค่าที่เพิ่มขึ้นถือว่าไม่ดี (เช่น ยอดหัก)
@@ -1910,7 +1983,7 @@ function renderMomKpis(){
   const months = getAllAvailableMonths();
   const mA = months.find(m => m.key === keyA);
   const mB = months.find(m => m.key === keyB);
-  const monthRange = (mA && mB) ? `${mA.label} (หลัก) เทียบกับ ${mB.label}` : '';
+  const monthRange = (mA && mB) ? `${mB.label} เทียบกับ ${mA.label} (เดือนหลัก = 100%)` : '';
 
   // การ์ด "รายรับรวม" จากไฟล์ "สรุปรายรับรวม" (incomeMonthly)
   const incRowA = findRowByMonthKey(state.incomeMonthly, keyA);
@@ -2970,6 +3043,7 @@ function exportToExcel(){
   switchTab('overview');
 
   const badge = document.createElement('div');
+  badge.className = 'demo-badge';
   badge.textContent = 'DEMO · ข้อมูลสมมติ';
   badge.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9999;background:#FBEDDA;color:#8F5A1E;font:700 12.5px Sarabun,sans-serif;padding:6px 14px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.18);letter-spacing:.3px;pointer-events:none;';
   document.body.appendChild(badge);

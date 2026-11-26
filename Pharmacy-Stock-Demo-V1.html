@@ -427,6 +427,39 @@
   .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--teal-deep);color:#fff;font-size:13.5px;padding:11px 18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;max-width:92vw;}
   .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
   .toast button{margin-left:12px;background:none;border:1px solid rgba(255,255,255,.5);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:6px;cursor:pointer;}
+
+  /* ---------- V2: ปรับสำหรับมือถือ ---------- */
+  .mobile-hint{display:none;}
+  @media (max-width:600px){
+    body{padding:16px 12px 60px;}
+    .brand-title{font-size:21px;}
+    .topbar{gap:10px;margin-bottom:18px;padding-bottom:14px;}
+    .topbar-meta{text-align:left;}
+    .stat-card{padding:16px 18px;}
+    .stat-value{font-size:28px;}
+    .category-section,.table-section{padding:16px 14px;}
+    .cat-row{grid-template-columns:96px 1fr 70px;gap:8px;font-size:12px;padding-left:4px;padding-right:4px;}
+    .cat-pct{width:30px;}
+    /* ปุ่ม/ช่องในแถบควบคุมตาราง: ช่องค้นหาเต็มแถว ที่เหลือแบ่ง 2 คอลัมน์ */
+    .table-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .table-controls input[type=text]{grid-column:1 / -1;min-width:0;}
+    .table-controls select,.table-controls .btn{width:100%;min-width:0;white-space:normal;}
+    /* ตาราง: บอกว่าเลื่อนได้ + ตรึงคอลัมน์ชื่อยาไว้ด้านซ้าย */
+    .mobile-hint{display:block;font-size:11.5px;color:var(--ink-faint);margin:0 0 6px;}
+    .table-scroll table{min-width:780px;font-size:12px;}
+    .table-scroll th:nth-child(2),.table-scroll td:nth-child(2){position:sticky;left:0;background:var(--surface);z-index:1;box-shadow:1px 0 0 var(--line);min-width:130px;max-width:150px;white-space:normal;}
+    .table-scroll td{white-space:nowrap;}
+    .table-scroll tbody tr:hover td:nth-child(2){background:var(--teal-pale);}
+    /* ฟอร์มเพิ่ม/แก้ไข: 1 คอลัมน์ ไม่ล้นจอ */
+    .modal-overlay{padding:10px;align-items:flex-end;}
+    .modal{padding:18px 16px;max-height:92vh;}
+    .field-grid{grid-template-columns:1fr;gap:12px;}
+    .field-grid input{width:100%;min-width:0;}
+    .modal-actions .btn{flex:1;}
+    /* กัน iPhone ซูมเข้าเองเวลาแตะช่องกรอก (ต้อง ≥16px) */
+    input,select,.table-controls input,.table-controls select,.field-grid input{font-size:16px;}
+    .toast{bottom:16px;}
+  }
 </style>
 </head>
 <body>
@@ -506,6 +539,7 @@
       <button class="btn" id="importBtn">นำเข้าข้อมูล (.json)</button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
     </div>
+    <div class="mobile-hint">← เลื่อนตารางซ้าย–ขวาเพื่อดูคอลัมน์ทั้งหมด →</div>
     <div class="table-scroll">
     <table>
       <thead>
